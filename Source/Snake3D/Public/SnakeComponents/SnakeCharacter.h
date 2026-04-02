@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
+#include "SnakeTail.h"
 #include "GameFramework/Character.h"
 #include "SnakeCharacter.generated.h"
 
@@ -14,12 +15,12 @@ UCLASS()
 class SNAKE3D_API ASnakeCharacter : public ACharacter
 {
 	GENERATED_BODY()
+	
 
 public:
 	ASnakeCharacter();
 
 protected:
-	virtual void BeginPlay() override;
 	
 
 	// Movement
@@ -38,6 +39,8 @@ protected:
 	
 public:
 
+	virtual void BeginPlay() override;
+
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -51,9 +54,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	class USpringArmComponent* CameraBoom;
 	
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	class UCameraComponent* Camera;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Snake Tail")
+	TSubclassOf<ASnakeTail> SnakeTailClass;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UStaticMeshComponent> SnakeHead;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UStaticMeshComponent> HeadToFollow;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Snake Tail")
+	int32 BodyCount;
+	
+	UFUNCTION(BlueprintCallable, Category = "Snake Tail")
+	void SpawnTail(TSubclassOf<ASnakeTail> TailClass) ;
+	
+private:
+	FActorSpawnParameters SpawnInfo;
+	TArray<ASnakeTail*> SnakeTails;
+	
+	void GrowTail();
+	void UpdateAllBodyParts();
 	
 };

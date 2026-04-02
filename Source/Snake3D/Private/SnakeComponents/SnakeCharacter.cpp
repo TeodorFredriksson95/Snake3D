@@ -8,6 +8,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "SnakeComponents/SnakeTail.h"
+#include "kismet/KismetArrayLibrary.h"
 
 
 // Sets default values
@@ -23,41 +25,99 @@ ASnakeCharacter::ASnakeCharacter()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	
-	Camera->bUsePawnControlRotation = false; 
+
+	Camera->bUsePawnControlRotation = false;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	SnakeHead = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SnakeHead"));
+	SnakeHead->SetupAttachment(RootComponent);
+
+	HeadToFollow = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HeadToFollow"));
+	HeadToFollow->SetupAttachment(SnakeHead);
+	HeadToFollow->SetRelativeLocation(FVector(-160.0f, 0.0f, 40.0f));
+
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 }
 
 void ASnakeCharacter::BeginPlay()
 {
-	Super::BeginPlay();
-	
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(InputMapping, 0);
 		}
 	}
+	SpawnTail(SnakeTailClass);
+
+	for (int i = 0; i < 3; ++i)
+	{
+		GrowTail();
+	}
+
+	Super::BeginPlay();
+}
+
+void ASnakeCharacter::SpawnTail(const TSubclassOf<ASnakeTail> TailClass)
+{
+	const FVector Location = HeadToFollow->GetComponentLocation();
+	FVector TempLocation = Location;
+
+	for (int i = 0; i < BodyCount; ++i)
+	{
+		const int32 BodySegmentSeparationDistance = i * 50;
+		const FVector SegmentLocation = FVector(BodySegmentSeparationDistance, 0.0f, 0.0f);
+		TempLocation -= SegmentLocation;
+		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f);
+
+		ASnakeTail* TailPart = GetWorld()->SpawnActor<ASnakeTail>(TailClass, TempLocation, Rotation, SpawnInfo);
+		// Scale of actor has been set in SnakeTailActor BP.
+		TempLocation = Location;
+
+		SnakeTails.Add(TailPart);
+	}
+}
+
+void ASnakeCharacter::GrowTail()
+{
+	if (SnakeTails.Num() == 0) return;
+	const ASnakeTail* LastBodyPart = SnakeTails.Last();
+	if (!LastBodyPart) return;
+
+	const FVector PreviousLocation = LastBodyPart->GetActorLocation();
+	const FVector NewLocation = FVector(PreviousLocation.X - 50, PreviousLocation.Y, PreviousLocation.Z);
+	const FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f);
+	const FTransform NewTransform = LastBodyPart->GetTransform();
+
+	ASnakeTail* NewLastBodyPart = GetWorld()->SpawnActor<ASnakeTail>(SnakeTailClass, NewLocation, Rotation, SpawnInfo);
+
+	if (!NewLastBodyPart) return;
+
+	SnakeTails.Add(NewLastBodyPart);
+}
+
+void ASnakeCharacter::UpdateAllBodyParts()
+{
+	if (SnakeTails.Num() == 0) return;
 }
 
 
-	void ASnakeCharacter::Turn(const FInputActionValue& Value)
-	{
-		const float TurnInput = Value.Get<float>();
+void ASnakeCharacter::Turn(const FInputActionValue& Value)
+{
+	const float TurnInput = Value.Get<float>();
 
-		FRotator NewRotation = GetActorRotation();
-		NewRotation.Yaw += TurnInput * TurnSpeed * GetWorld()->GetDeltaSeconds();
-		SetActorRotation(NewRotation);
-	}
+	FRotator NewRotation = GetActorRotation();
+	NewRotation.Yaw += TurnInput * TurnSpeed * GetWorld()->GetDeltaSeconds();
+	SetActorRotation(NewRotation);
+}
 
 
 void ASnakeCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	AddMovementInput(GetActorForwardVector(), MoveSpeed * DeltaTime);
-
 }
 
 void ASnakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -65,6 +125,5 @@ void ASnakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ASnakeCharacter::Turn);
-	}	
+	}
 }
-
