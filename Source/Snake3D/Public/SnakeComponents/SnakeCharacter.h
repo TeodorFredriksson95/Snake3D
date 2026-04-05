@@ -23,14 +23,6 @@ public:
 
 protected:
 	
-
-	// Movement
-	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
-	UInputMappingContext* InputMapping;
-	
-	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
-	UInputAction* TurnAction;
-	
 	float CurrentForwardInput;
 
 public:
@@ -38,8 +30,6 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
 	bool bCanMove;

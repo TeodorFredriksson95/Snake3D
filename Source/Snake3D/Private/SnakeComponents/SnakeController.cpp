@@ -5,56 +5,42 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
 #include "SnakeComponents/SnakeCharacter.h"
 #include "SnakeComponents/SnakeGameInstance.h"
 #include "SnakeComponents/SnakeGameMode.h"
 
-void ASnakeController::HandleGameStateChanged(ESnakeGameState NewState)
-{
-		// switch (NewState)
-		// {
-		// case ESnakeGameState::MainMenu:
-		// 	{
-		// 		UE_LOG(LogTemp, Warning, TEXT("Entered MainMenu"));
-		//
-		// 		SetShowMouseCursor(true);
-		// 		if (ASnakeCharacter* SnakeChar = Cast<ASnakeCharacter>(GetPawn()))
-		// 		{
-		// 			SnakeChar->bCanMove = false;
-		// 		}
-		// 		break;
-		// 	}
-		// case ESnakeGameState::Game:
-		// 	{
-		// 		UE_LOG(LogTemp, Warning, TEXT("Entered Game"));
-		//
-		// 		SetShowMouseCursor(false);
-		// 		if (ASnakeCharacter* SnakeChar = Cast<ASnakeCharacter>(GetPawn()))
-		// 		{
-		// 			SnakeChar->bCanMove = true;
-		// 		}
-		// 		break;
-		// 	}
-		// case ESnakeGameState::Outro:
-		// 	{
-		// 		UE_LOG(LogTemp, Warning, TEXT("Entered Outro"));
-		//
-		// 		if (ASnakeCharacter* SnakeChar = Cast<ASnakeCharacter>(GetPawn()))
-		// 		{
-		// 			SnakeChar->bCanMove = false;
-		// 		}
-		// 		break;
-		// 	}
-		// }
-}
+
 
 void ASnakeController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
+	if (GetLocalPlayer()->GetControllerId() != 0) return;
+
 	if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		// TODO: Add pause menu handling here
+		EIC->BindAction(TurnP1Action, ETriggerEvent::Triggered, this, &ASnakeController::TurnP1);
+		EIC->BindAction(TurnP2Action, ETriggerEvent::Triggered, this, &ASnakeController::TurnP2);
+	}
+}
+
+void ASnakeController::TurnP1(const FInputActionValue& Value)
+{
+	if (ASnakeCharacter* Snake = Cast<ASnakeCharacter>(GetPawn()))
+	{
+		Snake->Turn(Value);
+	}
+}
+
+void ASnakeController::TurnP2(const FInputActionValue& Value)
+{
+	if (APlayerController* PC1 = UGameplayStatics::GetPlayerController(this, 1))
+	{
+		if (ASnakeCharacter* Snake = Cast<ASnakeCharacter>(PC1->GetPawn()))
+		{
+			Snake->Turn(Value);
+		}
 	}
 }
 
@@ -68,12 +54,6 @@ void ASnakeController::BeginPlay()
 		Subsystem->AddMappingContext(InputMapping, 0);
 	}
 
-	ASnakeGameMode* GameMode = GetWorld()->GetAuthGameMode<ASnakeGameMode>();
-	if (GameMode)
-	{
-		// GameMode->OnGameStateChanged.AddDynamic(this, &ASnakeController::HandleGameStateChanged);
-	}
-	
 	Super::BeginPlay();
 	
 }

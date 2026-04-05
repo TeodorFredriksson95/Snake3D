@@ -12,7 +12,6 @@
 #include "kismet/KismetMathLibrary.h"
 
 
-// Sets default values
 ASnakeCharacter::ASnakeCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -41,16 +40,8 @@ ASnakeCharacter::ASnakeCharacter()
 
 void ASnakeCharacter::BeginPlay()
 {
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
-			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(InputMapping, 0);
-		}
-	}
-	SpawnTail(SnakeTailClass);
 
+	SpawnTail(SnakeTailClass);
 
 	Super::BeginPlay();
 }
@@ -147,6 +138,8 @@ void ASnakeCharacter::Turn(const FInputActionValue& Value)
 }
 
 
+
+
 void ASnakeCharacter::Tick(float DeltaTime)
 {
 	if (!bCanMove) return;
@@ -155,10 +148,3 @@ void ASnakeCharacter::Tick(float DeltaTime)
 	UpdateAllBodyParts();
 }
 
-void ASnakeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		EnhancedInputComponent->BindAction(TurnAction, ETriggerEvent::Triggered, this, &ASnakeCharacter::Turn);
-	}
-}

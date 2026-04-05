@@ -17,22 +17,20 @@ class SNAKE3D_API ASnakeController : public APlayerController
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION()
-	void HandleGameStateChanged(ESnakeGameState NewState);
-
+	
+	// Movement
+	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
+	UInputAction* TurnP1Action;
+	
+	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
+	UInputAction* TurnP2Action;
+	
 	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
 	UInputMappingContext* InputMapping;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
-	UInputAction* StartGameAction;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
-	UInputAction* ShowMainMenuAction;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input")
-	UInputAction* StartOutroAction;
-	
 protected:
 	void virtual SetupInputComponent() override;
+	void TurnP1(const FInputActionValue& Value);
+	void TurnP2(const FInputActionValue& Value);
 	void virtual BeginPlay() override;
 };
