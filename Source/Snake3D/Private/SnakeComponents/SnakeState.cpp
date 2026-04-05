@@ -3,14 +3,17 @@
 
 #include "SnakeComponents/SnakeState.h"
 
+#include "SnakeComponents/SnakeGameInstance.h"
 
-void ASnakeState::SetSnakeScore(const float NewScore)
+
+void ASnakeState::SetSnakeScore(const int32 SnakeID, const float NewScore)
 {
 	SetScore(NewScore);
 	
 	if (GetScore() == 5 && CurrentLevel == ESnakeGameLevel::FirstLevel)
 	{
 		CurrentLevel = ESnakeGameLevel::SecondLevel;
+		GameInstance->SetSnakePlayerData(NewScore, SnakeID);
 		OnReachedTargetScore.Broadcast(CurrentLevel);
 	}
 	else if (GetScore() == 10 && CurrentLevel == ESnakeGameLevel::SecondLevel)
@@ -23,4 +26,38 @@ void ASnakeState::SetSnakeScore(const float NewScore)
 		OnReachedTargetScore.Broadcast(CurrentLevel);
 	}
 	
+}
+
+void ASnakeState::BeginPlay()
+{
+	GameInstance = Cast<USnakeGameInstance>(GetGameInstance());
+	Super::BeginPlay();
+}
+
+void ASnakeState::UpdateScore(const int32 SnakeID)
+{
+	const float OldScore = GetScore();
+	const float NewScore = OldScore + 1;
+	
+	const float InstancedScore = GameInstance->GetSnakePlayerData(SnakeID) + 1;
+	SetScore(InstancedScore);
+	
+	GameInstance->SetSnakePlayerData(InstancedScore, SnakeID);
+	OnScoreUpdated.Broadcast(InstancedScore);
+	
+	if (NewScore == 5 && CurrentLevel == ESnakeGameLevel::FirstLevel)
+	{
+		CurrentLevel = ESnakeGameLevel::SecondLevel;
+		GameInstance->SetSnakePlayerData(InstancedScore, SnakeID);
+		OnReachedTargetScore.Broadcast(CurrentLevel);
+	}
+	else if (InstancedScore == 10 && CurrentLevel == ESnakeGameLevel::SecondLevel)
+	{
+		CurrentLevel = ESnakeGameLevel::ThirdLevel;
+		OnReachedTargetScore.Broadcast(CurrentLevel);
+	}
+	else if (InstancedScore == 15 && CurrentLevel == ESnakeGameLevel::ThirdLevel)
+	{
+		OnReachedTargetScore.Broadcast(CurrentLevel);
+	}
 }

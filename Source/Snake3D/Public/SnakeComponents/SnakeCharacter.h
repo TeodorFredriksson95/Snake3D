@@ -41,6 +41,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
+	bool bCanMove;
 	
 private:
 	
@@ -49,6 +51,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	float TurnSpeed = 120.0f;
+
 	
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	class USpringArmComponent* CameraBoom;
@@ -79,7 +82,6 @@ private:
 	
 	FActorSpawnParameters SpawnInfo;
 	TArray<ASnakeTail*> SnakeTails;
-	bool bCanMove;
 	
 
 	UFUNCTION(BlueprintCallable, Category = "Snake Tail")

@@ -35,6 +35,8 @@ class SNAKE3D_API ASnakeGameMode : public AGameModeBase
 	UFUNCTION(BlueprintCallable)
 	void SetGameState(ESnakeGameState NewState);
 	
+	void virtual PostLogin(APlayerController* NewPlayer) override;
+	
 protected:
 	virtual void BeginPlay() override;
 

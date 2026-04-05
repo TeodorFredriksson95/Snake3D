@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "SnakeComponents/SnakeCharacter.h"
+#include "SnakeComponents/SnakeGameInstance.h"
 #include "SnakeComponents/SnakeGameMode.h"
 
 void ASnakeController::HandleGameStateChanged(ESnakeGameState NewState)
@@ -88,8 +89,6 @@ void ASnakeController::StartOutro()
 
 void ASnakeController::BeginPlay()
 {
-	Super::BeginPlay();
-
 
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
 		GetLocalPlayer()))
@@ -102,4 +101,7 @@ void ASnakeController::BeginPlay()
 	{
 		GameMode->OnGameStateChanged.AddDynamic(this, &ASnakeController::HandleGameStateChanged);
 	}
+	
+	Super::BeginPlay();
+	
 }
