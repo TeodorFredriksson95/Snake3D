@@ -37,5 +37,6 @@ class SNAKE3D_API ASnakeGameMode : public AGameModeBase
 	
 protected:
 	virtual void BeginPlay() override;
+
 };
 	

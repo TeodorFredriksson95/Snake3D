@@ -21,7 +21,6 @@ ASnakeCharacter::ASnakeCharacter()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 500.f;
 	CameraBoom->TargetOffset = FVector(0.0f, 0.0f, 500.0f);
-	CameraBoom->bDoCollisionTest = true;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -52,10 +51,6 @@ void ASnakeCharacter::BeginPlay()
 	}
 	SpawnTail(SnakeTailClass);
 
-	for (int i = 0; i < 3; ++i)
-	{
-		GrowTail();
-	}
 
 	Super::BeginPlay();
 }
@@ -67,13 +62,14 @@ void ASnakeCharacter::SpawnTail(const TSubclassOf<ASnakeTail> TailClass)
 
 	for (int i = 0; i < BodyCount; ++i)
 	{
-		const int32 BodySegmentSeparationDistance = i * 50;
+		const int32 BodySegmentSeparationDistance = i * TailSegmentDistance;
 		const FVector SegmentLocation = FVector(BodySegmentSeparationDistance, 0.0f, 0.0f);
 		TempLocation -= SegmentLocation;
 		FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f);
 
-		ASnakeTail* TailPart = GetWorld()->SpawnActor<ASnakeTail>(TailClass, TempLocation, Rotation, SpawnInfo);
 		// Scale of actor has been set in SnakeTailActor BP.
+		ASnakeTail* TailPart = GetWorld()->SpawnActor<ASnakeTail>(TailClass, TempLocation, Rotation, SpawnInfo);
+		
 		TempLocation = Location;
 
 		SnakeTails.Add(TailPart);
@@ -87,7 +83,7 @@ void ASnakeCharacter::GrowTail()
 	if (!LastBodyPart) return;
 
 	const FVector PreviousLocation = LastBodyPart->GetActorLocation();
-	const FVector NewLocation = FVector(PreviousLocation.X - 50, PreviousLocation.Y, PreviousLocation.Z);
+	const FVector NewLocation = FVector(PreviousLocation.X - TailSegmentDistance, PreviousLocation.Y, PreviousLocation.Z);
 	const FRotator Rotation = FRotator(0.0f, 0.0f, 0.0f);
 	const FTransform NewTransform = LastBodyPart->GetTransform();
 
@@ -113,9 +109,9 @@ void ASnakeCharacter::UpdateAllBodyParts()
 
 
 	float Length = UKismetMathLibrary::VSize(FirstAfterHeadLocation - HeadLocation);
-	if (Length >= 100)
+	if (Length >= TailLengthDistance)
 	{
-		FTransform NewTransform = UKismetMathLibrary::TLerp(FirstAfterHeadTransform, HeadTransform, 0.05f);
+		FTransform NewTransform = UKismetMathLibrary::TLerp(FirstAfterHeadTransform, HeadTransform, LerpTime);
 		FirstBodyPart->SetActorTransform(NewTransform);
 	}
 
@@ -131,9 +127,9 @@ void ASnakeCharacter::UpdateAllBodyParts()
 		FTransform NextTransform = PartToMoveTo->GetTransform();
 
 		Length = UKismetMathLibrary::VSize(FirstAfterHeadLocation - HeadLocation);
-		if (Length >= 100)
+		if (Length >= TailLengthDistance)
 		{
-			FTransform NewTransform = UKismetMathLibrary::TLerp(FirstTransform, NextTransform, 0.05f);
+			FTransform NewTransform = UKismetMathLibrary::TLerp(FirstTransform, NextTransform, LerpTime);
 			PartToMove->SetActorTransform(NewTransform);
 		}
 	}
@@ -142,6 +138,7 @@ void ASnakeCharacter::UpdateAllBodyParts()
 
 void ASnakeCharacter::Turn(const FInputActionValue& Value)
 {
+	if (!bCanMove) return;
 	const float TurnInput = Value.Get<float>();
 
 	FRotator NewRotation = GetActorRotation();

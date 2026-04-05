@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SnakeTail.generated.h"
 
+
 UCLASS()
 class SNAKE3D_API ASnakeTail : public AActor
 {

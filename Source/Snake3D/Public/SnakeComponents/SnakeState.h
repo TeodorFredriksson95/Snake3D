@@ -9,6 +9,16 @@
 /**
  * 
  */
+
+	
+UENUM(BlueprintType)
+enum class ESnakeGameLevel : uint8
+{
+	FirstLevel,
+	SecondLevel,
+	ThirdLevel
+};
+
 UCLASS()
 class SNAKE3D_API ASnakeState : public APlayerState
 {
@@ -18,4 +28,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetSnakeScore(float NewScore);
 	
+private:
+	ESnakeGameLevel CurrentLevel = ESnakeGameLevel::FirstLevel;
+	
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReachedTargetScore, ESnakeGameLevel, CurrentLevel);
+
+
+	UPROPERTY(BlueprintAssignable)
+	FOnReachedTargetScore OnReachedTargetScore;
 };

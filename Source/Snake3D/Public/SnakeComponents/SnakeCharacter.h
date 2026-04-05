@@ -29,15 +29,10 @@ protected:
 	UInputMappingContext* InputMapping;
 	
 	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
-	UInputAction* JumpAction;
-	
-	UPROPERTY(EditAnywhere, Category = "EnhancedInput")
 	UInputAction* TurnAction;
 	
 	float CurrentForwardInput;
-	
-	void Turn(const FInputActionValue& Value);
-	
+
 public:
 
 	virtual void BeginPlay() override;
@@ -46,41 +41,56 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float MoveSpeed = 650.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float TurnSpeed = 120.0f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	class USpringArmComponent* CameraBoom;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-	class UCameraComponent* Camera;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Snake Tail")
-	TSubclassOf<ASnakeTail> SnakeTailClass;
-	
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UStaticMeshComponent> SnakeHead;
-	
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UStaticMeshComponent> HeadToFollow;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Snake Tail")
-	int32 BodyCount;
-	
-	UFUNCTION(BlueprintCallable, Category = "Snake Tail")
-	void SpawnTail(TSubclassOf<ASnakeTail> TailClass) ;
 	
 private:
+	
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float MoveSpeed = 650.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	float TurnSpeed = 120.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	class USpringArmComponent* CameraBoom;
+	
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	class UCameraComponent* Camera;
+	
+	UPROPERTY(EditAnywhere, Category = "Snake Tail")
+	TSubclassOf<ASnakeTail> SnakeTailClass;
+	
+	UPROPERTY(EditAnywhere, Category = "Snake Tail")
+	int32 BodyCount;
+	
+	UPROPERTY(EditAnywhere, Category = "Snake Tail")
+	int32 TailSegmentDistance;	
+	
+	UPROPERTY(EditAnywhere, Category = "Snake Tail")
+	int32 TailLengthDistance;
+	
+	UPROPERTY(EditAnywhere, Category = "Snake Tail")
+	float LerpTime;
+	
+	UPROPERTY(EditAnywhere, Category= "Snake Head")
+	TObjectPtr<UStaticMeshComponent> SnakeHead;
+	
+	UPROPERTY(EditAnywhere, Category= "Snake Head")
+	TObjectPtr<UStaticMeshComponent> HeadToFollow;
+	
 	FActorSpawnParameters SpawnInfo;
 	TArray<ASnakeTail*> SnakeTails;
 	bool bCanMove;
 	
-	friend class ASnakeController;
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Snake Tail")
 	void GrowTail();
+	
+	UFUNCTION(BlueprintCallable, Category = "Snake Tail")
+	void SpawnTail(TSubclassOf<ASnakeTail> TailClass) ;
+	
 	void UpdateAllBodyParts();
+	void Turn(const FInputActionValue& Value);
+	
+	friend class ASnakeController;
 	
 };
