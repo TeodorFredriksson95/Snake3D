@@ -35,8 +35,7 @@ void ASnakeState::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ASnakeState::UpdateScore(const int32 SnakeID)
-{
+void ASnakeState::UpdateScore(const int32 SnakeID){
 	const float OldScore = GetScore();
 	const float NewScore = OldScore + 1;
 	

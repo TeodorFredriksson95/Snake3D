@@ -25,7 +25,7 @@ void ASnakeController::SetupInputComponent()
 	}
 }
 
-void ASnakeController::TurnP1(const FInputActionValue& Value)
+void ASnakeController::TurnP1(const FInputActionValue& Value) 
 {
 	if (ASnakeCharacter* Snake = Cast<ASnakeCharacter>(GetPawn()))
 	{
