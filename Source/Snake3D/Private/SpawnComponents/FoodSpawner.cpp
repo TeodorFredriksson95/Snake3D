@@ -29,7 +29,7 @@ void AFoodSpawner::SpawnFood() const
 	const FVector Extent = SpawnBox->GetScaledBoxExtent();
 
 	FVector RandomPoint = UKismetMathLibrary::RandomPointInBoundingBox(Center, Extent);
-	RandomPoint.Z = 0;
+	// RandomPoint.Z = 0;
 	GetWorld()->SpawnActor<AActor>(ActorToSpawn, RandomPoint, FRotator::ZeroRotator);
 }
 

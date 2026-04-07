@@ -40,7 +40,6 @@ ASnakeCharacter::ASnakeCharacter()
 
 void ASnakeCharacter::BeginPlay()
 {
-
 	SpawnTail(SnakeTailClass);
 
 	Super::BeginPlay();
@@ -61,6 +60,20 @@ void ASnakeCharacter::SpawnTail(const TSubclassOf<ASnakeTail> TailClass)
 		ASnakeTail* TailPart = GetWorld()->SpawnActor<ASnakeTail>(TailClass, TempLocation, Rotation, SpawnInfo);
 
 		TempLocation = Location;
+		
+		const APlayerController* PC = Cast<APlayerController>(GetController());
+		if (PC)
+		{
+			if (const ULocalPlayer* LocalPlayer = PC->GetLocalPlayer())
+			{
+				const int32 ControllerID = LocalPlayer->GetControllerId();
+				if (ControllerID == 1)
+				{
+					UStaticMeshComponent* SnakeMesh = TailPart->FindComponentByClass<UStaticMeshComponent>();
+					SnakeMesh->SetMaterial(0, SecondPlayerSnakeMaterial);
+				}
+			}
+		}
 
 		SnakeTails.Add(TailPart);
 	}
@@ -81,6 +94,20 @@ void ASnakeCharacter::GrowTail()
 	ASnakeTail* NewLastBodyPart = GetWorld()->SpawnActor<ASnakeTail>(SnakeTailClass, NewLocation, Rotation, SpawnInfo);
 
 	if (!NewLastBodyPart) return;
+
+	const APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		if (const ULocalPlayer* LocalPlayer = PC->GetLocalPlayer())
+		{
+			const int32 ControllerID = LocalPlayer->GetControllerId();
+			if (ControllerID == 1)
+			{
+				UStaticMeshComponent* SnakeMesh = NewLastBodyPart->FindComponentByClass<UStaticMeshComponent>();
+				SnakeMesh->SetMaterial(0, SecondPlayerSnakeMaterial);
+			}
+		}
+	}
 
 	SnakeTails.Add(NewLastBodyPart);
 }
@@ -137,6 +164,21 @@ void ASnakeCharacter::Turn(const FInputActionValue& Value)
 	SetActorRotation(NewRotation);
 }
 
+void ASnakeCharacter::UpdateSnakeMaterial() const
+{
+	// Set material for snake tail
+	for (const ASnakeTail* Tail : SnakeTails)
+	{
+		UStaticMeshComponent* SnakeMesh = Tail->FindComponentByClass<UStaticMeshComponent>();
+		if (!SnakeMesh) continue;
+
+		SnakeMesh->SetMaterial(0, SecondPlayerSnakeMaterial);
+	}
+
+	// Set material for head
+	SnakeHead->SetMaterial(0, SecondPlayerSnakeMaterial);
+}
+
 
 void ASnakeCharacter::Tick(float DeltaTime)
 {
@@ -151,7 +193,7 @@ void ASnakeCharacter::Tick(float DeltaTime)
 void ASnakeCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	
+
 	USnakeGameInstance* SnakeGameInstance = GetGameInstance<USnakeGameInstance>();
 	const APlayerController* PC = Cast<APlayerController>(GetController());
 
@@ -159,10 +201,17 @@ void ASnakeCharacter::PossessedBy(AController* NewController)
 	{
 		if (const ULocalPlayer* LocalPlayer = PC->GetLocalPlayer())
 		{
+			// Default move speed is effectively being by the default FPlayerPersistentData struct in SnakeGameInstance.h
 			const int32 ControllerID = LocalPlayer->GetControllerId();
 			FPlayerPersistentData PersistentData = SnakeGameInstance->GetSnakePlayerData(ControllerID);
 			MoveSpeed = PersistentData.CurrentMoveSpeed;
 			GetCharacterMovement()->MaxWalkSpeed = PersistentData.CurrentMoveSpeed;
+
+			// Change snake color for second player
+			if (ControllerID == 1)
+			{
+				UpdateSnakeMaterial();
+			}
 		}
 	}
 }
@@ -171,7 +220,7 @@ void ASnakeCharacter::IncreaseMoveSpeed(const float Multiplier)
 {
 	MoveSpeed *= Multiplier;
 	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
-	
+
 	USnakeGameInstance* SnakeGameInstance = GetGameInstance<USnakeGameInstance>();
 
 	if (const APlayerController* PC = Cast<APlayerController>(GetController()); SnakeGameInstance && PC)

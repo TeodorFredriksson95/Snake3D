@@ -49,7 +49,7 @@ void ASnakeGameMode::HandleReachedTargetScore(const ESnakeGameLevel Level) // Ca
 	switch (Level)
 	{
 	case ESnakeGameLevel::SecondLevel:
-			UGameplayStatics::OpenLevel(GetWorld(),"Lvl_ThirdPerson");
+			UGameplayStatics::OpenLevel(GetWorld(),"Lvl_SnakeLevel_02");
 		break;
 		case ESnakeGameLevel::ThirdLevel:
 			UGameplayStatics::OpenLevel(GetWorld(),"Lvl_SnakeLevel_01");

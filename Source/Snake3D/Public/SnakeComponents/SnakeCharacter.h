@@ -66,6 +66,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Snake Tail")
 	float LerpTime;
 	
+	UPROPERTY(EditAnywhere, Category = "Snake Tail")
+	TObjectPtr<UMaterialInterface> SecondPlayerSnakeMaterial;
+	
 	UPROPERTY(EditAnywhere, Category= "Snake Head")
 	TObjectPtr<UStaticMeshComponent> SnakeHead;
 	
@@ -84,6 +87,7 @@ private:
 	
 	void UpdateAllBodyParts();
 	void Turn(const FInputActionValue& Value);
+	void UpdateSnakeMaterial() const;
 	
 	friend class ASnakeController;
 	
