@@ -43,7 +43,7 @@ void ASnakeCharacter::BeginPlay()
 	SpawnTail(SnakeTailClass);
 
 	Super::BeginPlay();
-}
+}	
 
 void ASnakeCharacter::SpawnTail(const TSubclassOf<ASnakeTail> TailClass)
 {
@@ -219,7 +219,11 @@ void ASnakeCharacter::PossessedBy(AController* NewController)
 void ASnakeCharacter::IncreaseMoveSpeed(const float Multiplier)
 {
 	MoveSpeed *= Multiplier;
-	LerpTime = LerpTime * (Multiplier + 0.15f);
+	LerpTime = FMath::Clamp(LerpTime * (Multiplier + 0.15f), 0.15f, 0.9f);
+	if (LerpTime >= 1.f)
+	{
+		int a = 0;
+	}
 		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
 
 	USnakeGameInstance* SnakeGameInstance = GetGameInstance<USnakeGameInstance>();

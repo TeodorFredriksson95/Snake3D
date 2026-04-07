@@ -54,10 +54,10 @@ void USnakeGameInstance::ResetSnakeGameInstanceData(const bool bShouldResetPlaye
 {
 	SnakePlayerMap.Empty();
 	LevelScoreThreshold = 10;
-	bIsCoopMode = false;
 
 	if (bShouldResetPlayers)
 	{
+		bIsCoopMode = false;
 		TArray<ULocalPlayer*> LocalSnakePlayers = GetLocalPlayers();
 		for (int32 i = LocalSnakePlayers.Num() - 1; i >= 1; --i)
 		{
