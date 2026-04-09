@@ -47,7 +47,7 @@ FPlayerPersistentData USnakeGameInstance::GetSnakePlayerData(const int32 PlayerI
 
 void USnakeGameInstance::IncreaseLevelScoreThreshold()
 {
-	LevelScoreThreshold *= LevelScoreThresholdMultiplier;
+	LevelScoreThreshold = (LevelScoreThreshold * LevelScoreThresholdMultiplier) + LevelScoreThreshold/2;
 }
 
 void USnakeGameInstance::ResetSnakeGameInstanceData(const bool bShouldResetPlayers)

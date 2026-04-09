@@ -7,7 +7,6 @@
 #include "SnakeGameInstance.generated.h"
 
 enum class ESnakeGameLevel : uint8;
-enum class ESnakeGameState : uint8;
 
 /**
  * 
@@ -57,10 +56,10 @@ public:
 	float LevelScoreThresholdMultiplier;
 		
 	UFUNCTION(BlueprintCallable)
-	void SetCoopMode(const bool NewCoopMode) { bIsCoopMode = NewCoopMode; };
-	
+	void SetCoopMode(const bool NewCoopMode) { bIsCoopMode = NewCoopMode; }
+
 	UFUNCTION(BlueprintCallable)
-	bool IsCoopMode() const { return bIsCoopMode; };
+	bool IsCoopMode() const { return bIsCoopMode; }
 
 private:
 	UFUNCTION(BlueprintCallable, Category="Persistent Player Data")

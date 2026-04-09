@@ -18,8 +18,6 @@ enum class ESnakeGameState : uint8
 	Outro
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameStateChanged, ESnakeGameState, NewState);
-
 
 UCLASS()
 class SNAKE3D_API ASnakeGameMode : public AGameModeBase
@@ -27,15 +25,6 @@ class SNAKE3D_API ASnakeGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
-	ESnakeGameState CurrentState;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnGameStateChanged OnGameStateChanged;
-
-	UFUNCTION(BlueprintCallable)
-	void SetGameState(ESnakeGameState NewState);
-
 	void virtual PostLogin(APlayerController* NewPlayer) override;
 	
 	UFUNCTION()

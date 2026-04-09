@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "SnakeComponents/SnakeTail.h"
 #include "DangerousObstacle.generated.h"
+
 
 UCLASS()
 class SNAKE3D_API ADangerousObstacle : public AActor
@@ -13,5 +15,11 @@ class SNAKE3D_API ADangerousObstacle : public AActor
 
 public:
 	ADangerousObstacle();
+	
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnGameOver OnGameOver;
+
 
 };

@@ -20,7 +20,6 @@ class SNAKE3D_API ASnakeCharacter : public ACharacter
 public:
 	ASnakeCharacter();
 
-	
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -28,14 +27,10 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
-	bool bCanMove;
+	bool bCanMove = true;
 	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void IncreaseMoveSpeed(float Multiplier);
-	
-protected:
-	
-	float CurrentForwardInput;
 
 private:
 	
@@ -76,8 +71,7 @@ private:
 	TObjectPtr<UStaticMeshComponent> HeadToFollow;
 	
 	FActorSpawnParameters SpawnInfo;
-	TArray<ASnakeTail*> SnakeTails;
-	
+	TArray<TObjectPtr<ASnakeTail>> SnakeTails;
 
 	UFUNCTION(BlueprintCallable, Category = "Snake Tail")
 	void GrowTail();

@@ -14,13 +14,6 @@
 class ASnakeGameMode;
 class USnakeGameInstance;
 
-UENUM(BlueprintType)
-enum class ESnakeGameLevel : uint8
-{
-	FirstLevel,
-	SecondLevel,
-	ThirdLevel
-};
 
 UCLASS()
 class SNAKE3D_API ASnakeState : public APlayerState
@@ -41,13 +34,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UFUNCTION(BlueprintCallable)
-	void SetPlayerStateScore(const float NewScore) { SetScore(NewScore); }
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateScore(const int32 SnakeID);
-
-	ESnakeGameLevel CurrentLevel = ESnakeGameLevel::FirstLevel;
 
 	TObjectPtr<USnakeGameInstance> GameInstance;
 	TObjectPtr<ASnakeGameMode> SnakeGameMode;

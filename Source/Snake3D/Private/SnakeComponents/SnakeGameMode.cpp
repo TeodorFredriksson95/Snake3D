@@ -6,12 +6,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "SnakeComponents/SnakeState.h"
 
-void ASnakeGameMode::SetGameState(ESnakeGameState NewState)
-{
-	CurrentState = NewState;
-	OnGameStateChanged.Broadcast(NewState);
-}
-
 void ASnakeGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
@@ -38,7 +32,6 @@ void ASnakeGameMode::PostLogin(APlayerController* NewPlayer)
 void ASnakeGameMode::BeginPlay()
 {
 	const USnakeGameInstance* GameInstance = Cast<USnakeGameInstance>(GetGameInstance());
-	SetGameState(ESnakeGameState::MainMenu);
 
 	if (GameInstance->IsCoopMode())
 	{

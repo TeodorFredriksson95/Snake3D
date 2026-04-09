@@ -8,16 +8,17 @@
 #include "Kismet/GameplayStatics.h"
 #include "SnakeComponents/SnakeCharacter.h"
 
+
 void ASnakeController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
 	if (GetLocalPlayer()->GetControllerId() != 0) return;
 
-	if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(InputComponent))
+	if (UEnhancedInputComponent* SnakeControllerInput = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		EIC->BindAction(TurnP1Action, ETriggerEvent::Triggered, this, &ASnakeController::TurnP1);
-		EIC->BindAction(TurnP2Action, ETriggerEvent::Triggered, this, &ASnakeController::TurnP2);
+		SnakeControllerInput->BindAction(TurnP1Action, ETriggerEvent::Triggered, this, &ASnakeController::TurnP1);
+		SnakeControllerInput->BindAction(TurnP2Action, ETriggerEvent::Triggered, this, &ASnakeController::TurnP2);
 	}
 }
 
@@ -49,6 +50,7 @@ void ASnakeController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(InputMapping, 0);
 	}
-
+	
+	
 	Super::BeginPlay();
 }
